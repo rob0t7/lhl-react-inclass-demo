@@ -1,39 +1,33 @@
-var PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
-var express    = require('express');
-var morgan     = require('morgan');
-var bodyParser = require('body-parser');
-var cors       = require('cors');
+const MongoClient = require('mongodb').MongoClient;
+const MONGO_URL   = process.env.MONGO_URL || 'mongodb://localhost/lhl-beers';
 
-var app = express();
+const express     = require('express');
+const morgan      = require('morgan');
+const bodyParser  = require('body-parser');
+const cors        = require('cors');
 
-var data = require('./data');
-var nextID = data.beers.length + 1;
+const app = express();
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json())
 app.use(cors())
-app.get('/beers', (req, res) => {
-  var beers = data.beers;
-  res.json({beers})
-})
-
-/* app.get('/beers/:id', (req, res) => {
- *   var beer = data.beers.find( (beer) => { return beer.id === req.params.id })
- *   res.json({beer})
- * })
- *
- * app.post('/beers', (req, res) => {
- *   var beer = req.body;
- *   beer.id = nextID++;
- *   data.beers = [...data.beers, beer]
- *   res.status(201).json({beer})
- * })*/
 
 app.get('/', (req, res) => {
   res.send('OK')
 })
-app.listen(PORT,  () => {
-  console.log('Started Server App')
+
+MongoClient.connect(MONGO_URL, (err, db) => {
+  if (err) {
+    throw err;
+  }
+
+  const DBUtils = require('./DBUtils')(db)
+  app.use('/beers', require('./routes')(DBUtils))
+
+  app.listen(PORT,  () => {
+    console.log(`Start App Server on port: ${PORT}`)
+  })
 })

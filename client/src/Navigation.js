@@ -20,7 +20,7 @@ const Navigation = (props) => (
         </a>
       </li> ) }
     </ul>
-    <button className="navigation__button">New Beer</button>
+    <button className="navigation__button" onClick={ (e) => { props.onChangeLocation('new')}}>New Beer</button>
   </nav>
 )
 

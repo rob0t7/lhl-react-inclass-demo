@@ -2,25 +2,46 @@ import React from 'react';
 
 import Navigation from './Navigation';
 import Beer       from './Beer';
-
+import BeersTable from './BeersTable';
+import BeerForm   from './BeerForm';
 import './App.css'
-
-var beers = [
-  {id: 1, name: 'Beer 1'}
-]
 
 class App extends React.Component {
   constructor() {
     super()
     this.state = {
       beers: [],
-      currentBeer: undefined
+      currentBeer: undefined,
+      showNewForm: false
     }
   }
 
   handleChangeLocation = (beerID) => {
-    var currentBeer = this.state.beers.find( beer => { return beer.id === beerID})
-    this.setState({currentBeer})
+    if (beerID === 'new') {
+      this.setState({showNewForm: true})
+    } else {
+      var currentBeer = this.state.beers.find( beer => { return beer.id === beerID})
+      this.setState({currentBeer})
+    }
+  }
+
+  handleInsertBeer = (beer) => {
+    fetch('http://localhost:5000/beers', {
+      body: JSON.stringify({beer: beer}),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then( resp => { return resp.json() })
+      .then( json => {
+        fetch('http://localhost:5000/beers')
+          .then( resp => { return resp.json() })
+          .then( json => {
+            this.setState({showNewForm: false, beers: json.beers})
+          })
+      })
+      .catch( () => { console.error('Failed Request')})
   }
 
   componentDidMount() {
@@ -42,7 +63,12 @@ class App extends React.Component {
             className="beer-app__navigation"
             beers={this.state.beers}
             onChangeLocation={this.handleChangeLocation}/>
-        { this.state.currentBeer ? <Beer className="beer-app__main" currentBeer={this.state.currentBeer}/> : <div className="beer-app__main">No Beer</div> }
+        <div className="beer-app__main">
+          { this.state.showNewForm ?
+            <BeerForm insertBeer={this.handleInsertBeer}/> :
+            this.state.currentBeer ? <Beer currentBeer={this.state.currentBeer}/> : <BeersTable beers={this.state.beers}/>
+          }
+        </div>
       </div>
     )
   }
