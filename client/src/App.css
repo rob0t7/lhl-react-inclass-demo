@@ -1,0 +1,17 @@
+.beer-app {
+  width: 80%;
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.beer-app__navigation {
+  width: 20%;
+  padding: .5rem 1rem;
+}
+
+.beer-app__main {
+  width: 80%;
+  padding: .5rem 1rem;
+}

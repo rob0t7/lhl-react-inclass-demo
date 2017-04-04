@@ -1,0 +1,18 @@
+.navigation {
+  text-align: left;
+}
+
+.navigation li {
+  list-style: none;
+}
+
+.navigation__button {
+  display: inline-block;
+  padding: .5rem 1rem;
+  font-size: 1rem;
+  line-height: 1.25;
+  background: lightblue;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
